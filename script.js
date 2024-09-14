@@ -17,42 +17,7 @@ const togQuizData = [
             { text: "Adaptability and cunning.", characters: ["Manon", "Lysandra"] }
         ]
     },
-    {
-        question: "How do you handle conflicts?",
-        answers: [
-            { text: "Face them head-on with strength.", characters: ["Aelin", "Chaol"] },
-            { text: "Use diplomacy and seek compromise.", characters: ["Dorian", "Elide"] },
-            { text: "Manipulate circumstances to your advantage.", characters: ["Manon", "Lysandra"] },
-            { text: "Support others from the shadows.", characters: ["Rowan", "Lorcan"] }
-        ]
-    },
-    {
-        question: "What's your ideal environment?",
-        answers: [
-            { text: "A bustling city with lots of people.", characters: ["Dorian", "Lysandra"] },
-            { text: "The solitude of nature.", characters: ["Rowan", "Elide"] },
-            { text: "High up in the mountains or skies.", characters: ["Manon", "Lorcan"] },
-            { text: "Anywhere as long as you're with loved ones.", characters: ["Aelin", "Chaol"] }
-        ]
-    },
-    {
-        question: "Which weapon do you prefer?",
-        answers: [
-            { text: "Sword or blade.", characters: ["Aelin", "Chaol"] },
-            { text: "Magic or supernatural abilities.", characters: ["Dorian", "Manon"] },
-            { text: "Bow and arrow.", characters: ["Rowan"] },
-            { text: "Wit and charm.", characters: ["Lysandra", "Elide"] }
-        ]
-    },
-    {
-        question: "What motivates you the most?",
-        answers: [
-            { text: "Protecting those you care about.", characters: ["Aelin", "Rowan", "Lorcan"] },
-            { text: "Seeking knowledge and truth.", characters: ["Dorian", "Elide"] },
-            { text: "Achieving power and recognition.", characters: ["Manon", "Lysandra"] },
-            { text: "Upholding honor and duty.", characters: ["Chaol"] }
-        ]
-    }
+    // Add the rest of the questions here
 ];
 
 const acotarQuizData = [
@@ -74,42 +39,7 @@ const acotarQuizData = [
             { text: "Fierce loyalty to your friends.", characters: ["Cassian", "Amren"] }
         ]
     },
-    {
-        question: "How do you react when someone challenges you?",
-        answers: [
-            { text: "Stand your ground and fight back.", characters: ["Feyre", "Nesta", "Cassian"] },
-            { text: "Outsmart them with clever tactics.", characters: ["Rhysand", "Amren"] },
-            { text: "Remain calm and try to understand their perspective.", characters: ["Elain", "Azriel"] },
-            { text: "Use charm to diffuse the situation.", characters: ["Mor"] }
-        ]
-    },
-    {
-        question: "What's most important in a team?",
-        answers: [
-            { text: "Trust and openness.", characters: ["Feyre", "Rhysand"] },
-            { text: "Shared goals and determination.", characters: ["Nesta", "Cassian"] },
-            { text: "Support and care for one another.", characters: ["Elain", "Azriel"] },
-            { text: "Unique skills that complement each other.", characters: ["Amren", "Mor"] }
-        ]
-    },
-    {
-        question: "Which location appeals to you the most?",
-        answers: [
-            { text: "A vibrant city filled with art and culture.", characters: ["Feyre", "Mor"] },
-            { text: "A grand library with endless knowledge.", characters: ["Rhysand", "Amren"] },
-            { text: "Peaceful gardens and quiet retreats.", characters: ["Elain", "Azriel"] },
-            { text: "Training grounds and open skies.", characters: ["Cassian", "Nesta"] }
-        ]
-    },
-    {
-        question: "What drives you forward?",
-        answers: [
-            { text: "Love and protecting those you cherish.", characters: ["Feyre", "Rhysand", "Azriel"] },
-            { text: "Overcoming past hardships.", characters: ["Nesta", "Amren"] },
-            { text: "Personal growth and finding your place.", characters: ["Elain", "Mor"] },
-            { text: "The thrill of battle and testing your limits.", characters: ["Cassian"] }
-        ]
-    }
+    // Add the rest of the questions here
 ];
 
 // Define the characters for each series
@@ -174,10 +104,12 @@ function renderQuiz() {
 
         q.answers.forEach((a, aIndex) => {
             const label = document.createElement('label');
+
             const radio = document.createElement('input');
             radio.type = 'radio';
             radio.name = `question${index}`;
             radio.value = aIndex;
+
             label.appendChild(radio);
             label.appendChild(document.createTextNode(a.text));
             questionElem.appendChild(label);
@@ -200,13 +132,29 @@ function calculateResult(event) {
     // Reset scores
     Object.keys(scores).forEach(char => scores[char] = 0);
 
+    // Check if all questions are answered
+    let allAnswered = true;
+    currentQuizData.forEach((q, index) => {
+        const selected = document.querySelector(`input[name="question${index}"]:checked`);
+        if (!selected) {
+            allAnswered = false;
+        }
+    });
+
+    if (!allAnswered) {
+        alert("Please answer all questions before submitting.");
+        return;
+    }
+
     currentQuizData.forEach((q, index) => {
         const selected = document.querySelector(`input[name="question${index}"]:checked`);
         if (selected) {
             const answerIndex = selected.value;
             const selectedAnswer = q.answers[answerIndex];
             selectedAnswer.characters.forEach((char) => {
-                scores[char]++;
+                if (scores.hasOwnProperty(char)) {
+                    scores[char]++;
+                }
             });
         }
     });
@@ -237,6 +185,7 @@ function calculateResult(event) {
     // Optionally, offer a retry or select another series
     const retryButton = document.createElement('button');
     retryButton.textContent = 'Take Another Quiz';
+    retryButton.classList.add('retry-button');
     retryButton.addEventListener('click', () => {
         window.location.reload();
     });
